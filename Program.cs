@@ -1,6 +1,26 @@
+using Hangfire;
+using IPOPulse.DBContext;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+#region Hangfire Services
+builder.Services.AddHangfire(config =>
+    config.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddHangfireServer();
+#endregion
+
+builder.Services.AddDbContext<AppDBContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
+#region Custom Services
+builder.Services.AddScoped<IpoDataService>();
+#endregion
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
@@ -19,6 +39,15 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+// Schedule recurring jobs after the app (and Hangfire) is fully initialized
+var recurringJobManager = app.Services.GetRequiredService<IRecurringJobManager>();
+// var ipoDataService = app.Services.GetRequiredService<IpoDataService>();
+
+recurringJobManager.AddOrUpdate<IpoDataService>(
+    "FetchIPOData",
+    service => service.FetchAllOpenIposAndSaveToFileAsync(),
+    "*/2 * * * *");
 
 app.MapControllerRoute(
     name: "default",

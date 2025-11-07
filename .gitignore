@@ -1,0 +1,68 @@
+# Ignore build output folders
+bin/
+obj/
+
+# Ignore user-specific files
+*.user
+*.userosscache
+*.suo
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+
+# Ignore Visual Studio folder
+.vs/
+
+# Ignore Rider IDE folder
+.idea/
+
+# Ignore NuGet packages folder
+*.nupkg
+packages/
+
+# Ignore generated debug files
+*.pdb
+
+# Ignore log files
+*.log
+
+# Ignore appsettings that may contain secrets/configs
+appsettings*.json
+
+# Ignore secrets file (ASP.NET Core user-secrets)
+secrets.json
+
+# Ignore publish output folder
+publish/
+
+# Ignore local database files
+*.mdf
+*.ldf
+*.sqlite
+
+# Ignore Azure Functions local settings
+local.settings.json
+
+# Ignore JetBrains Rider workspace settings
+*.sln.DotSettings.user
+
+# Ignore test result folders/reports
+TestResults/
+
+# Ignore coverage results
+coverage/
+
+# Ignore Resharper files
+_ReSharper*/
+
+# Ignore NCrunch test files
+*.ncrunch*
+
+# Ignore OS system files
+.DS_Store
+Thumbs.db
+
+# Ignore environment variable files
+.env
+*.env
