@@ -57,6 +57,11 @@ recurringJobManager.AddOrUpdate<IpoDataService>(
     service => service.FetchAndSaveIpoData(),
     "*/5 * * * *");
 
+recurringJobManager.AddOrUpdate<MarketDataService>(
+    "FetchIPOData",
+    service => service.GetMarketData(),
+    "*/5 * * * *");
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
