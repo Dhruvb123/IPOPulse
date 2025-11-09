@@ -4,6 +4,7 @@ using IPOPulse.DBContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IPOPulse.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20251109184203_UpdateListingDateToDateTime")]
+    partial class UpdateListingDateToDateTime
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,45 +34,20 @@ namespace IPOPulse.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Price")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Symbol")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Ipo");
-                });
-
-            modelBuilder.Entity("IPOPulse.Models.MarketData", b =>
-                {
-                    b.Property<string>("ISIN")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OfferedPrice")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("counter")
-                        .HasColumnType("int");
-
-                    b.Property<string>("currentPrice")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("listingDayHigh")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("listingDayLow")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ISIN");
-
-                    b.ToTable("Market");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,7 +1,9 @@
 ﻿
+using System.Globalization;
 using System.Text.Json.Nodes;
 using IPOPulse.DBContext;
 using IPOPulse.Models;
+using Microsoft.EntityFrameworkCore;
 public class IpoDataService
 {
     private readonly IConfiguration _configuration;
@@ -79,11 +81,14 @@ public class IpoDataService
                         if (ipoObject != null)
                         {
                             string type = ipoObject["type"]?.GetValue<string>();
-                            if (type == "SME") {
+                            string id = ipoObject["id"]?.GetValue<string>();
+
+                            bool exists = await _dbcontext.Ipo.AnyAsync(ipo => ipo.Id == id);
+
+                            if (type == "SME" || exists) {
                                 continue;
                             }
-
-                            string id = ipoObject["id"]?.GetValue<string>();
+                            
                             string name = ipoObject["name"]?.GetValue<string>();
                             string symbol = ipoObject["symbol"]?.GetValue<string>();                           
                             string listingDate = ipoObject["listingDate"]?.GetValue<string>();
@@ -94,10 +99,10 @@ public class IpoDataService
                                 Id = id,
                                 Name = name,
                                 Symbol = symbol,
-                                ListingDate = listingDate,
+                                ListingDate = DateTime.ParseExact(listingDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
                                 Price = priceRange.Split("-")[1]
                             };
-
+                            _dbcontext.Ipo.Add(ipo);
                         }
                     }
                 }
