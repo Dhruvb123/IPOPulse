@@ -19,8 +19,9 @@ builder.Services.AddDbContext<AppDBContext>(options =>
 
 
 #region Custom Services
-builder.Services.AddScoped<IpoDataService>();
 builder.Services.AddSingleton<HangfireJobCleaner>();
+builder.Services.AddScoped<IpoDataService>();
+builder.Services.AddScoped<MarketDataService>();
 #endregion
 
 builder.Services.AddControllersWithViews();
@@ -58,7 +59,7 @@ recurringJobManager.AddOrUpdate<IpoDataService>(
     "*/5 * * * *");
 
 recurringJobManager.AddOrUpdate<MarketDataService>(
-    "FetchIPOData",
+    "FetchMarketData",
     service => service.GetMarketData(),
     "*/5 * * * *");
 

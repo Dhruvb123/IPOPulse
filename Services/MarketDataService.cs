@@ -37,6 +37,8 @@ namespace IPOPulse.Services
                     Console.WriteLine(response);
 
                     JsonNode data = JsonNode.Parse(jsonString);
+
+                    s
                     Console.WriteLine(data);
                 }
             }
