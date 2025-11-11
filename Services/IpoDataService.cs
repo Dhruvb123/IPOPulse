@@ -60,7 +60,10 @@ public class IpoDataService
                 };
                 endpoint = $"/ipos?{string.Join("&", queryParams)}";
 
-                response = await _httpClient.GetAsync(baseURL + endpoint);
+                if (page != 1)
+                {
+                    response = await _httpClient.GetAsync(baseURL + endpoint);
+                }
 
                 if (!response.IsSuccessStatusCode)
                 {

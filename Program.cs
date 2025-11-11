@@ -53,10 +53,10 @@ cleaner.ClearAllJobs();
 var recurringJobManager = app.Services.GetRequiredService<IRecurringJobManager>();
 // var ipoDataService = app.Services.GetRequiredService<IpoDataService>();
 
-recurringJobManager.AddOrUpdate<IpoDataService>(
-    "FetchIPOData",
-    service => service.FetchAndSaveIpoData(),
-    "*/5 * * * *");
+//recurringJobManager.AddOrUpdate<IpoDataService>(
+//    "FetchIPOData",
+//    service => service.FetchAndSaveIpoData(),
+//    "*/5 * * * *");
 
 recurringJobManager.AddOrUpdate<MarketDataService>(
     "FetchMarketData",

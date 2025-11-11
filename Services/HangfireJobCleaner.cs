@@ -39,7 +39,7 @@ namespace IPOPulse.Services
 
         public void ClearAllJobs()
         {
-            // DeleteAllRecurringJobs();
+            DeleteAllRecurringJobs();
             DeleteAllScheduledAndProcessingJobs();
         }
     }
