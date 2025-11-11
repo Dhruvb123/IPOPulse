@@ -11,7 +11,6 @@ namespace IPOPulse.Models
         public string listingDayLow { get; set; }
         public string currentPrice {  get; set; }
         public int counter { get; set; }
-
         public string ID {  get; set; }
 
     }
