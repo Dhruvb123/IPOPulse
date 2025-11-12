@@ -1,45 +1,89 @@
 ﻿using IPOPulse.DBContext;
 using IPOPulse.Models;
+using System.Text.Json.Nodes;
 
 namespace IPOPulse.Services
 {
     public class AlertService
     {
         private readonly AppDBContext _context;
+        private readonly IConfiguration _config;
+        private readonly HttpClient _httpClient;
 
-        public AlertService(AppDBContext context)
+        public AlertService(AppDBContext context, IConfiguration config)
         {
             _context = context;
+            _config = config;
+            _httpClient = new HttpClient();
+            var apiKey = _config["MarketAPI:Key"];
+            if (string.IsNullOrEmpty(apiKey))
+                throw new InvalidOperationException("API key missing.");
+
+            _httpClient.DefaultRequestHeaders.Add("x-api-key", apiKey);
         }
 
-        public void UpdateCurrentPrice(BStockData bstock, string price)
+        public async Task UpdateCurrentPrice()
         {
-            bstock.CurrentPrice = price;
-            var buy = decimal.Parse(bstock.BuyingPrice);
-            var cur = decimal.Parse(bstock.CurrentPrice);
-            var change = (cur-buy) / buy;
-            change *= 100;
+            try
+            {
+                List<BStockData> stocks = _context.BStocks.ToList();
+                foreach (var bstock in stocks)
+                {
+                    var baseUrl = _config["MarketAPI:BaseURL"];
+                    var endpoint = $"/stock?name={bstock.Symbol}";
 
-            bstock.Returns = change + "%";
+                    var response = await _httpClient.GetAsync(baseUrl + endpoint);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        var errorContent = await response.Content.ReadAsStringAsync();
+                        throw new HttpRequestException($"HTTP error: {response.StatusCode}, Details: {errorContent}");
+                    }
+
+                    var jsonString = await response.Content.ReadAsStringAsync();
+
+                    if (jsonString.Contains("error"))
+                    {
+                        continue;
+                    }
+
+                    JsonNode data = JsonNode.Parse(jsonString);
+
+                    bstock.CurrentPrice = data["currentPrice"]["NSE"].GetValue<string>();
+                    var buy = decimal.Parse(bstock.BuyingPrice);
+                    var cur = decimal.Parse(bstock.CurrentPrice);
+                    var change = (cur - buy) / buy;
+                    change *= 100;
+
+                    bstock.Returns = change + "%";
+                                       
+                }
+
+                await _context.SaveChangesAsync();
+                await CheckSLAndTarget();
+            }
+            catch (Exception ex) {
+                Console.WriteLine("Exception occurred while fethcin Market Data.\n" + "Error Message: " + ex.Message + "\nInner Message: " + ex.InnerException + "\n");
+            }
         }
 
-        public async void CheckSLAndTarget()
+        public async Task CheckSLAndTarget()
         {
             List<BStockData> list = _context.BStocks.ToList();
             foreach (var item in list)
             {
-                if (item.ExitPrice != null)
+                if (item.ExitPrice == null)
                 {
                     continue;
                 }
                 var curr = decimal.Parse(item.CurrentPrice);
-                if ( curr <= decimal.Parse(item.SL))
+                if ( curr < decimal.Parse(item.SL))
                 {
                     // Send Sell Alert
                     await SellAlert(item, 0);
                 }
                 var bPrice = decimal.Parse(item.BuyingPrice);
-                if (curr >= bPrice + (0.2m * bPrice)) { 
+                if (curr > bPrice + (0.2m * bPrice)) { 
                     await SellAlert(item, 1);
                 }
 
@@ -70,6 +114,7 @@ namespace IPOPulse.Services
             if (indicator == 0)
             {
                 // Fn to sell alert msg doe to SL hit
+                _context.BStocks.Remove(stock);
             }
             else
             {

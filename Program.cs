@@ -67,13 +67,20 @@ var recurringJobManager = app.Services.GetRequiredService<IRecurringJobManager>(
 recurringJobManager.AddOrUpdate<IpoDataService>(
     "FetchIPOData",
     service => service.FetchAndSaveIpoData(),
-    "15 * * * 1-5",
+    "30 6 * * 1-5",
     TimeZoneInfo.FindSystemTimeZoneById("Asia/Kolkata"));
 
 recurringJobManager.AddOrUpdate<MarketDataService>(
     "FetchMarketData",
     service => service.GetMarketData(),
-    "*/3 * * * 1-5",
+    "45 3 * * 1-5",
+    TimeZoneInfo.FindSystemTimeZoneById("Asia/Kolkata")
+);
+
+recurringJobManager.AddOrUpdate<AlertService>(
+    "TrackBoughtStocks",
+    service => service.UpdateCurrentPrice(),
+    "15 4 * * 1-5",
     TimeZoneInfo.FindSystemTimeZoneById("Asia/Kolkata")
 );
 

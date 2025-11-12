@@ -8,12 +8,10 @@ namespace IPOPulse.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly MessageService _messageService;
 
-        public HomeController(ILogger<HomeController> logger, MessageService messageService)
+        public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
-            _messageService = messageService;
         }
 
         public IActionResult Index()

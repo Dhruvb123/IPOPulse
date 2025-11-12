@@ -32,7 +32,7 @@ namespace IPOPulse.Services
         {
             try
             {
-                List<IPOData> ipos = _context.Ipo.ToList<IPOData>();
+                List<IPOData> ipos = _context.Ipo.ToList();
                 foreach (var ipo in ipos)
                 {
                     var curr = await _context.Market.FirstOrDefaultAsync(m => m.ID == ipo.Id);
@@ -43,6 +43,7 @@ namespace IPOPulse.Services
                             // Buy Alert Fn
                             await _alert.BuyAlert(curr, ipo);                       
                             _context.Ipo.Remove(ipo);
+                            continue;
                         }
                     }
                     if (curr != null && curr.counter < -1)
@@ -139,13 +140,7 @@ namespace IPOPulse.Services
                                 {
                                     stock.counter = 0;
                                 }
-
-                                // Updating the BStock DB
-                                var bstock = _context.BStocks.FirstOrDefault(s => s.Id == ipo.Id);
-                                if (bstock != null)
-                                {
-                                    // Update Bstocks
-                                }
+                              
                             }
 
 
