@@ -16,7 +16,7 @@ namespace IPOPulse.Controllers
 
         public IActionResult Index()
         {
-            // _messageService.SendMailAsync();
+            ViewData["Message"] = "Welcome to IPOPulse! This is your personal IPO tracker.";
             return View();
         }
 
