@@ -1,4 +1,5 @@
 using Hangfire;
+using Hangfire.SqlServer;
 using IPOPulse.DBContext;
 using IPOPulse.Services;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +10,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 #region Hangfire Services
 builder.Services.AddHangfire(config =>
-    config.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
+    config.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection"), new SqlServerStorageOptions
+    {
+        CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+        SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+        QueuePollInterval = TimeSpan.Zero,
+        UseRecommendedIsolationLevel = true,
+        DisableGlobalLocks = true
+    }
+
+    ));
 
 builder.Services.AddHangfireServer();
 #endregion
@@ -22,6 +32,8 @@ builder.Services.AddDbContext<AppDBContext>(options =>
 builder.Services.AddSingleton<HangfireJobCleaner>();
 builder.Services.AddScoped<IpoDataService>();
 builder.Services.AddScoped<MarketDataService>();
+builder.Services.AddScoped<MessageService>();
+builder.Services.AddScoped<AlertService>();
 #endregion
 
 builder.Services.AddControllersWithViews();
@@ -51,17 +63,19 @@ cleaner.ClearAllJobs();
 
 // Schedule recurring jobs after the app (and Hangfire) is fully initialized
 var recurringJobManager = app.Services.GetRequiredService<IRecurringJobManager>();
-// var ipoDataService = app.Services.GetRequiredService<IpoDataService>();
 
-//recurringJobManager.AddOrUpdate<IpoDataService>(
-//    "FetchIPOData",
-//    service => service.FetchAndSaveIpoData(),
-//    "*/5 * * * *");
+recurringJobManager.AddOrUpdate<IpoDataService>(
+    "FetchIPOData",
+    service => service.FetchAndSaveIpoData(),
+    "15 * * * 1-5",
+    TimeZoneInfo.FindSystemTimeZoneById("Asia/Kolkata"));
 
 recurringJobManager.AddOrUpdate<MarketDataService>(
     "FetchMarketData",
     service => service.GetMarketData(),
-    "*/5 * * * *");
+    "*/3 * * * 1-5",
+    TimeZoneInfo.FindSystemTimeZoneById("Asia/Kolkata")
+);
 
 app.MapControllerRoute(
     name: "default",
