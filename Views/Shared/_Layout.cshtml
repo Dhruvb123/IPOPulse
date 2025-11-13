@@ -1,4 +1,5 @@
 ﻿@inject IHttpContextAccessor HttpContextAccessor
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,13 +10,41 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light" style="height: 7vh;">
         <div class="container-fluid">
+
+            <!-- App Name -->
             <a class="navbar-brand" style="height: 7vh; font-size: xx-large; font-weight: 700;" href="@Url.Action("Index", "Home")">IPOPulse</a>
-            <div class="d-flex">
-                <a class="btn btn-outline-primary me-2" href="@Url.Action("Login", "Account")">Login</a>
-                <a class="btn btn-primary" href="@Url.Action("Register", "Account")">Register</a>
-            </div>
+
+            @if (HttpContextAccessor.HttpContext.Session.GetString("IsLoggedIn") == "true")
+            {
+                <!-- Show nav links on left -->
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" style="font-weight: bold" href="@Url.Action("Index", "Dashboard")">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" style="font-weight: bold" href="@Url.Action("History", "Dashboard")">History</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" style="font-weight: bold" href="@Url.Action("Index", "Pricing")">Pricing</a>
+                    </li>
+                </ul>
+
+                <!-- Show Logout button on right -->
+                <div class="d-flex ms-auto">
+                    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-outline-danger">Logout</button>
+                    </form>
+                </div>
+            }
+            else
+            {
+                <!-- Show Login/Register buttons on right -->
+                <div class="d-flex ms-auto">
+                    <a class="btn btn-outline-primary me-2" href="@Url.Action("Login", "Account")">Login</a>
+                    <a class="btn btn-primary" href="@Url.Action("Register", "Account")">Register</a>
+                </div>
+            }
         </div>
-       
     </nav>
 
     <div class="container mt-4">

@@ -43,6 +43,7 @@ builder.Services.AddScoped<AlertService>();
 
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession();
 
 var app = builder.Build();

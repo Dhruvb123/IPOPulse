@@ -6,6 +6,7 @@
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
+        height: 90vh;
     }
     /* Container centers the table */
     .main-container{
@@ -74,36 +75,43 @@
     }
 </style>
 
-<div class="main-container">
-    <div class="table-container">
-        <table class="glass-table">
-            <thead class="glass-thead">
-                <tr>
-                    <th colspan="2">Name</th>
-                    <th>Symbol</th>
-                    <th>Buying Price</th>
-                    <th>Buy Date</th>
-                    <th>Current Price</th>
-                    <th>Returns</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var stock in Model)
-                {
-                    string returnsClass = "returns-positive";
-                    if (stock.Returns.Contains("-")) returnsClass = "returns-negative";
-
+@if (Model != null && Model.Any()){
+    <div class="main-container">
+        <div class="table-container">
+            <table class="glass-table">
+                <thead class="glass-thead">
                     <tr>
-                        <td colspan="2">@stock.Name</td>
-                        <td>@stock.Symbol</td>
-                        <td>@stock.BuyingPrice</td>
-                        <td>@stock.Date.ToString("yyyy-MM-dd")</td>
-                        <td>@stock.CurrentPrice</td>
-                        <td class="@returnsClass">@stock.Returns</td>
+                        <th colspan="2">Name</th>
+                        <th>Symbol</th>
+                        <th>Buying Price</th>
+                        <th>Buy Date</th>
+                        <th>Current Price</th>
+                        <th>Returns</th>
                     </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-</div>
+                </thead>
+                <tbody>
+                    @foreach (var stock in Model)
+                    {
+                        string returnsClass = "returns-positive";
+                        if (stock.Returns.Contains("-")) returnsClass = "returns-negative";
 
+                        <tr>
+                            <td colspan="2">@stock.Name</td>
+                            <td>@stock.Symbol</td>
+                            <td>@stock.BuyingPrice</td>
+                            <td>@stock.Date.ToString("yyyy-MM-dd")</td>
+                            <td>@stock.CurrentPrice</td>
+                            <td class="@returnsClass">@stock.Returns</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+else
+{
+<div style="text-align:center; color:white; font-size:1.5rem; margin-top:3rem;">
+    No Bought Stocks Found.
+</div>
+}

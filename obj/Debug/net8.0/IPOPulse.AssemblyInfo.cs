@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("IPOPulse")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a0b51c29c6776b52fb156e3a3be0dcb61f4cb9dc")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+da558dab6a7b1a8ef45b69f145a50984f15d284f")]
 [assembly: System.Reflection.AssemblyProductAttribute("IPOPulse")]
 [assembly: System.Reflection.AssemblyTitleAttribute("IPOPulse")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

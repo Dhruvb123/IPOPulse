@@ -6,6 +6,7 @@
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
+        height: 90vh;
     }
     /* Container centers the table */
     .main-container {
@@ -13,7 +14,8 @@
         width: 100%;
         display: flex;
         justify-content: center;
-        align-items: flex-start;
+        align-items: center;
+
     }
 
     .table-container {
@@ -74,7 +76,8 @@
     }
 </style>
 
-{model && 
+@if (Model != null && Model.Any())
+{
     <div class="main-container">
     <div class="table-container">
         <table class="glass-table">
@@ -108,5 +111,12 @@
             </tbody>
         </table>
     </div>
-</div>}
+</div>
+}
+else
+{
+<div style="text-align:center; color:white; font-size:1.5rem; margin-top:3rem;">
+    No History Found.
+</div>
+}
 
