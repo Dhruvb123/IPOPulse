@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IPOPulse.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20251112125100_AddingBStockTable")]
-    partial class AddingBStockTable
+    [Migration("20251113175856_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,7 +42,6 @@ namespace IPOPulse.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ExitPrice")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -63,7 +62,7 @@ namespace IPOPulse.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BStock");
+                    b.ToTable("BStocks");
                 });
 
             modelBuilder.Entity("IPOPulse.Models.IPOData", b =>
@@ -122,6 +121,39 @@ namespace IPOPulse.Migrations
                     b.HasKey("ISIN");
 
                     b.ToTable("Market");
+                });
+
+            modelBuilder.Entity("IPOPulse.Models.UserModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AgeGroup")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Contact")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
                 });
 #pragma warning restore 612, 618
         }

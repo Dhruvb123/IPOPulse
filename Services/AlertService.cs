@@ -26,11 +26,13 @@ namespace IPOPulse.Services
         {
             try
             {
-                List<BStockData> stocks = _context.BStocks.ToList();
+                List<BStockData> stocks = _context.BStocks
+                                                  .Where(stock => stock.ExitPrice == null)
+                                                  .ToList(); ;
                 foreach (var bstock in stocks)
                 {
                     var baseUrl = _config["MarketAPI:BaseURL"];
-                    var endpoint = $"/stock?name={bstock.Symbol}";
+                    var endpoint = $"/stock?name={bstock.Name.Split(" ")[0]}";
 
                     var response = await _httpClient.GetAsync(baseUrl + endpoint);
 
@@ -54,6 +56,7 @@ namespace IPOPulse.Services
                     var cur = decimal.Parse(bstock.CurrentPrice);
                     var change = (cur - buy) / buy;
                     change *= 100;
+                    change = Math.Round(change, 2);
 
                     bstock.Returns = change + "%";
                                        
@@ -69,10 +72,13 @@ namespace IPOPulse.Services
 
         public async Task CheckSLAndTarget()
         {
-            List<BStockData> list = _context.BStocks.ToList();
+            List<BStockData> list = _context.BStocks
+                                            .Where(stock => stock.ExitPrice == null)
+                                            .ToList();
+
             foreach (var item in list)
             {
-                if (item.ExitPrice == null)
+                if (item.ExitPrice != null)
                 {
                     continue;
                 }
@@ -109,17 +115,17 @@ namespace IPOPulse.Services
         }
 
         public async Task SellAlert(BStockData stock, int indicator)
-        {
-            stock.ExitPrice = stock.CurrentPrice;
+        {        
             if (indicator == 0)
             {
-                // Fn to sell alert msg doe to SL hit
-                _context.BStocks.Remove(stock);
+                // Fn to sell alert msg done to SL hit
             }
             else
             {
                 // Sell Recommendation Msg for Profit Booking
             }
+            stock.ExitPrice = stock.CurrentPrice;            
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -36,24 +36,13 @@ namespace IPOPulse.Services
                 foreach (var ipo in ipos)
                 {
                     var curr = await _context.Market.FirstOrDefaultAsync(m => m.ID == ipo.Id);
-                    if (curr != null && curr.counter >= 1)
+                    if (curr != null && curr.counter != 0)
                     {
-                        if (curr.counter >= 1)
-                        {
-                            // Buy Alert Fn
-                            await _alert.BuyAlert(curr, ipo);                       
-                            _context.Ipo.Remove(ipo);
-                            continue;
-                        }
-                    }
-                    if (curr != null && curr.counter < -1)
-                    {
-                        _context.Ipo.Remove(ipo);
-                        continue;
+                        continue;                    
                     }
 
                     var baseUrl = _config["MarketAPI:BaseURL"];
-                    var endpoint = $"/stock?name={ipo.Symbol}";
+                    var endpoint = $"/stock?name={ipo.Name.Split(" ")[0]}";
 
                     DateTime secondDayAfterListing = ipo.ListingDate.Date.AddDays(1);
                     DateTime today = DateTime.Now.Date;
@@ -130,11 +119,28 @@ namespace IPOPulse.Services
                                 stock.currentPrice = price;
                                 if (priceDecimal > listingDayHighDecimal)
                                 {
+                                    // Buy Alert
                                     stock.counter = stock.counter + 1;
+                                    await _alert.BuyAlert(curr, ipo);
+                                    _context.Ipo.Remove(ipo);
                                 }
                                 else if (priceDecimal < listingDayLowDecimal)
                                 {
+                                    // Sell Alert
                                     stock.counter = stock.counter - 1;
+                                    BStockData bstock = new BStockData()
+                                    {
+                                        Id = stock.ID,
+                                        Name = stock.Name,
+                                        Symbol = ipo.Symbol,
+                                        BuyingPrice = stock.currentPrice,
+                                        Date = DateTime.Now,
+                                        CurrentPrice = stock.currentPrice,
+                                        Returns = "0%",
+                                        SL = stock.listingDayLow
+                                    };
+                                    await _alert.SellAlert(bstock, 0);
+                                    _context.Ipo.Remove(ipo);
                                 }
                                 else
                                 {

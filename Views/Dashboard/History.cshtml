@@ -1,0 +1,112 @@
+﻿@model IEnumerable<IPOPulse.Models.BStockData>
+
+<style>
+    body {
+        background-image: url('/images/HistoryBg.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+    /* Container centers the table */
+    .main-container {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+    }
+
+    .table-container {
+        height: 80vh;
+        width: 100vw;
+        margin: 2rem auto;
+        background: rgba(255, 255, 255, 0.1); /* translucent */
+        backdrop-filter: blur(10px); /* glass blur effect */
+        border-radius: 15px;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        overflow-y: auto;
+        box-sizing: border-box;
+    }
+
+    table.glass-table {
+        table-layout: fixed;
+        width: 100%;
+        border-collapse: collapse;
+        color: white;
+        text-align: left;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    thead.glass-thead {
+        background-color: rgba(0, 0, 0, 0.75);
+        position: sticky;
+        top: 0;
+        z-index: 5;
+    }
+
+        thead.glass-thead th {
+            padding: 15px 20px;
+            font-weight: bold;
+            font-size: 1.15rem;
+        }
+
+    tbody tr:hover {
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    tbody td {
+        padding: 15px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        color: black;
+        font-weight: bold;
+        font-size: 1.15rem;
+    }
+
+    /* Color returns column based on positive/negative values */
+    td.returns-positive {
+        color: #4CAF50; /* green */
+        font-weight: bold;
+    }
+
+    td.returns-negative {
+        color: #F44336; /* red */
+        font-weight: bold;
+    }
+</style>
+
+{model && 
+    <div class="main-container">
+    <div class="table-container">
+        <table class="glass-table">
+            <thead class="glass-thead">
+                <tr>
+                    <th colspan="2">Name</th>
+                    <th>Symbol</th>
+                    <th>Buying Price</th>
+                    <th>Buy Date</th>
+                    <th>Current Price</th>
+                    <th>Exit</th>
+                    <th>Returns</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var stock in Model)
+                {
+                    string returnsClass = "returns-positive";
+                    if (stock.Returns.Contains("-")) returnsClass = "returns-negative";
+
+                    <tr>
+                        <td colspan="2">@stock.Name</td>
+                        <td>@stock.Symbol</td>
+                        <td>@stock.BuyingPrice</td>
+                        <td>@stock.Date.ToString("yyyy-MM-dd")</td>
+                        <td>@stock.CurrentPrice</td>
+                        <td>@stock.ExitPrice</td>
+                        <td class="@returnsClass">@stock.Returns</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>}
+

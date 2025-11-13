@@ -10,38 +10,33 @@ namespace IPOPulse.DBContext
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // IPO Table
-            modelBuilder.Entity<IPOData>()
-                .HasKey(i => i.Id);
 
-            // Important: Indicate that the ID is NOT database-generated
-            modelBuilder.Entity<IPOData>()
-                .Property(i => i.Id)
-                .ValueGeneratedNever();
+            // IPO Table
+            modelBuilder.Entity<IPOData>(entity =>
+            {
+                entity.HasKey(i => i.Id);
+                entity.Property(i => i.Id).ValueGeneratedNever();
+            });
 
             // MarketData Table
-            modelBuilder.Entity<MarketData>()
-               .HasKey(i => i.ISIN);
-
-            // Important: Indicate that the ID is NOT database-generated
-            modelBuilder.Entity<MarketData>()
-                .Property(i => i.ISIN)
-                .ValueGeneratedNever();
+            modelBuilder.Entity<MarketData>(entity =>
+            {
+                entity.HasKey(i => i.ISIN);
+                entity.Property(i => i.ISIN).ValueGeneratedNever();
+            });
 
             // BStocks Table
-            modelBuilder.Entity<BStockData>()
-               .HasKey(i => i.Id);
-
-            // Important: Indicate that the ID is NOT database-generated
-            modelBuilder.Entity<BStockData>()
-                .Property(i => i.Id)
-                .ValueGeneratedNever();
+            modelBuilder.Entity<BStockData>(entity =>
+            {
+                entity.HasKey(i => i.Id);
+                entity.Property(i => i.Id).ValueGeneratedNever();
+            });
         }
 
-        public DbSet<IPOData> Ipo {  get; set; }
-
+        public DbSet<IPOData> Ipo { get; set; }
         public DbSet<MarketData> Market { get; set; }
-
         public DbSet<BStockData> BStocks { get; set; }
+        public DbSet<UserModel> Users { get; set; }
+
     }
 }
