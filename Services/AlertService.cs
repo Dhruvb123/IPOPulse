@@ -32,7 +32,7 @@ namespace IPOPulse.Services
                 foreach (var bstock in stocks)
                 {
                     var baseUrl = _config["MarketAPI:BaseURL"];
-                    var endpoint = $"/stock?name={bstock.Name.Split(" ")[0]}";
+                    var endpoint = $"/stock?name={bstock.Symbol}";
 
                     var response = await _httpClient.GetAsync(baseUrl + endpoint);
 
@@ -46,7 +46,7 @@ namespace IPOPulse.Services
 
                     if (jsonString.Contains("error"))
                     {
-                        continue;
+                        throw new Exception($"Error response received while fetching data for {bstock.Name}");
                     }
 
                     JsonNode data = JsonNode.Parse(jsonString);
@@ -78,54 +78,65 @@ namespace IPOPulse.Services
 
             foreach (var item in list)
             {
-                if (item.ExitPrice != null)
-                {
-                    continue;
-                }
                 var curr = decimal.Parse(item.CurrentPrice);
                 if ( curr < decimal.Parse(item.SL))
                 {
-                    // Send Sell Alert
                     await SellAlert(item, 0);
                 }
                 var bPrice = decimal.Parse(item.BuyingPrice);
-                if (curr > bPrice + (0.2m * bPrice)) { 
+                if (curr > bPrice + (0.25m * bPrice)) { 
                     await SellAlert(item, 1);
                 }
 
             }
         }
 
-        public async Task BuyAlert(MarketData stock, IPOData st)
+        public async Task BuyAlert(MarketData stock)
         {
-            BStockData bstock= new BStockData()
+            try
             {
-                Id = stock.ID,
-                Name = stock.Name,
-                Symbol = st.Symbol,
-                BuyingPrice = stock.currentPrice,
-                Date = DateTime.Now,
-                CurrentPrice = stock.currentPrice,
-                Returns = "0%",
-                SL = stock.listingDayLow
-            };
+                BStockData bstock = new BStockData()
+                {
+                    Id = stock.ID,
+                    Name = stock.Name,
+                    Symbol = stock.Symbol,
+                    BuyingPrice = stock.currentPrice,
+                    Date = DateTime.Now,
+                    CurrentPrice = stock.currentPrice,
+                    Returns = "0%",
+                    SL = stock.listingDayLow
+                };
 
-            _context.BStocks.Add(bstock);
-            await _context.SaveChangesAsync();
+                _context.BStocks.Add(bstock);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex) { 
+                Console.WriteLine(ex.ToString());
+                throw;
+            }
         }
 
         public async Task SellAlert(BStockData stock, int indicator)
-        {        
-            if (indicator == 0)
+        {
+            // indicator 0 for hitting SL, 1 for profit booking
+            try
             {
-                // Fn to sell alert msg done to SL hit
+                if (indicator == 0)
+                {
+                    // Fn to sell alert msg done to SL hit
+                }
+                else
+                {
+                    // Sell Recommendation Msg for Profit Booking
+                }
+                stock.ExitPrice = stock.CurrentPrice;
+                await _context.SaveChangesAsync();
             }
-            else
+            catch(Exception ex) 
             {
-                // Sell Recommendation Msg for Profit Booking
+                Console.WriteLine($"Error: {ex.ToString()}");
+                throw;
             }
-            stock.ExitPrice = stock.CurrentPrice;            
-            await _context.SaveChangesAsync();
         }
     }
 }

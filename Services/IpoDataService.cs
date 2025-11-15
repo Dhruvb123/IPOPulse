@@ -8,13 +8,13 @@ public class IpoDataService
 {
     private readonly IConfiguration _configuration;
     private readonly HttpClient _httpClient;
-    private readonly AppDBContext _dbcontext;
+    private readonly AppDBContext _context;
 
     public IpoDataService(IConfiguration configuration, AppDBContext context)
     {
         _configuration = configuration;
         _httpClient = new HttpClient();
-        _dbcontext = context;
+        _context = context;
 
         var apiKey = _configuration["IpoAPI:Key"];
         if (string.IsNullOrEmpty(apiKey))
@@ -30,7 +30,7 @@ public class IpoDataService
             List<string> queryParams = new List<string>
             {
                 "status=open",
-                $"page=1",
+                "page=5",
                 "limit=1"
             };
 
@@ -46,6 +46,7 @@ public class IpoDataService
             }
             
             var jsonString = await response.Content.ReadAsStringAsync();
+            
             JsonNode data = JsonNode.Parse(jsonString);
 
             int totalPages = data?["meta"]?["totalPages"]?.GetValue<int>() ?? 0;
@@ -86,7 +87,7 @@ public class IpoDataService
                             string type = ipoObject["type"]?.GetValue<string>();
                             string id = ipoObject["id"]?.GetValue<string>();
 
-                            bool exists = await _dbcontext.Ipo.AnyAsync(ipo => ipo.Id == id);
+                            bool exists = await _context.Ipo.AnyAsync(ipo => ipo.Id == id);
 
                             if (type == "SME" || exists) {
                                 continue;
@@ -105,13 +106,15 @@ public class IpoDataService
                                 ListingDate = DateTime.ParseExact(listingDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
                                 Price = priceRange.Split("-")[1]
                             };
-                            _dbcontext.Ipo.Add(ipo);
+                            _context.Ipo.Add(ipo);
                         }
                     }
                 }
             }
 
-            await _dbcontext.SaveChangesAsync();
+            await _context.SaveChangesAsync();
+
+            await CheckListing();
 
         }
         catch (Exception ex)
@@ -119,6 +122,72 @@ public class IpoDataService
             // Log the exception for debugging
             Console.WriteLine("Error fetching IPO data: " + ex.Message);
             // Exit the method without continuing further
+            return;
+        }
+    }
+
+    public async Task CheckListing()
+    {
+        try
+        {
+            List<IPOData> ipos = _context.Ipo.ToList();
+            foreach (IPOData ipo in ipos)
+            {
+                DateTime today = DateTime.Now.Date;
+
+                if (today == ipo.ListingDate)
+                {
+                    var baseUrl = _configuration["MarketAPI:BaseURL"];
+                    var endpoint = $"/stock?name={ipo.Symbol}";
+                    var response = await _httpClient.GetAsync(baseUrl + endpoint);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        var errorContent = await response.Content.ReadAsStringAsync();
+                        throw new HttpRequestException($"HTTP error: {response.StatusCode}, Details: {errorContent}");
+                    }
+
+                    var jsonString = await response.Content.ReadAsStringAsync();
+
+                    if (jsonString.Contains("error"))
+                    {
+                        throw new Exception($"Error response received while fetching data for {ipo.Name}");
+                    }
+
+                    JsonNode data = JsonNode.Parse(jsonString);
+
+                    string ISIN = data["companyProfile"]["isInId"].GetValue<string>();
+                    string Name = data?["companyName"]?.GetValue<string>();
+                    string currentPrice = data["currentPrice"]["NSE"].GetValue<string>();
+                    string listingDayHigh = data["stockDetailsReusableData"]["high"].GetValue<string>();
+                    string listingDayLow = data["stockDetailsReusableData"]["low"].GetValue<string>();
+
+                    string offeredPrice = ipo.Price;
+                    int counter = 0;
+
+                    string Symbol = ipo.Symbol;
+
+                    MarketData stock = new MarketData()
+                    {
+                        ISIN = ISIN,
+                        Name = Name,
+                        Symbol = Symbol,
+                        offeredPrice = offeredPrice,
+                        listingDayHigh = listingDayHigh,
+                        listingDayLow = listingDayLow,
+                        currentPrice = currentPrice,
+                        counter = counter,
+                        ID = ipo.Id,
+                        ListingDate = ipo.ListingDate,
+                    };
+
+                    _context.Market.Add(stock);
+                    await _context.SaveChangesAsync();
+                }
+            }
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine("Error fetching IPO data: " + ex.Message);
             return;
         }
     }

@@ -74,39 +74,65 @@ using (var scope = app.Services.CreateScope())
     cleaner.ClearAllJobs();
 }
 
-//using (var scope = app.Services.CreateScope())
-//{
-//    var recurringJobManager1 = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
+using (var scope = app.Services.CreateScope())
+{
+    var recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
 
-//    recurringJobManager1.AddOrUpdate<IpoDataService>(
-//        "FetchIPOData",
-//        service => service.FetchAndSaveIpoData(),
-//        "20 19 * * 1-5",
-//        TimeZoneInfo.FindSystemTimeZoneById("Asia/Kolkata"));
-//}
+    recurringJobManager.AddOrUpdate<IpoDataService>(
+        "FetchIPOData",
+        service => service.FetchAndSaveIpoData(),
+        "00 16 * * 1-5",
+        new RecurringJobOptions
+        {
+            TimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Kolkata")
+        }
+    );
+
+    recurringJobManager.AddOrUpdate<MarketDataService>(
+        "FetchMarketData",
+        service => service.GetMarketData(),
+        "30 16 * * 1-5",
+        new RecurringJobOptions
+        {
+            TimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Kolkata")
+        }
+    );
+
+    recurringJobManager.AddOrUpdate<AlertService>(
+        "TrackBoughtStocks",
+        service => service.UpdateCurrentPrice(),
+        "00 17 * * 1-5",
+        new RecurringJobOptions { 
+            TimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Kolkata") 
+        }
+    );
+}
+
+#region Static Scheduler
 
 // Schedule recurring jobs after the app (and Hangfire) is fully initialized
-var recurringJobManager = app.Services.GetRequiredService<IRecurringJobManager>();
+//var recurringJobManager = app.Services.GetRequiredService<IRecurringJobManager>();
 
-recurringJobManager.AddOrUpdate<IpoDataService>(
-    "FetchIPOData",
-    service => service.FetchAndSaveIpoData(),
-    "45 15 * * 1-5",
-    TimeZoneInfo.FindSystemTimeZoneById("Asia/Kolkata"));
+//recurringJobManager.AddOrUpdate<IpoDataService>(
+//    "FetchIPOData",
+//    service => service.FetchAndSaveIpoData(),
+//    "45 15 * * 1-5",
+//    TimeZoneInfo.FindSystemTimeZoneById("Asia/Kolkata"));
 
-recurringJobManager.AddOrUpdate<MarketDataService>(
-    "FetchMarketData",
-    service => service.GetMarketData(),
-    "15 16 * * 1-5",
-    TimeZoneInfo.FindSystemTimeZoneById("Asia/Kolkata")
-);
+//recurringJobManager.AddOrUpdate<MarketDataService>(
+//    "FetchMarketData",
+//    service => service.GetMarketData(),
+//    "15 16 * * 1-5",
+//    TimeZoneInfo.FindSystemTimeZoneById("Asia/Kolkata")
+//);
 
-recurringJobManager.AddOrUpdate<AlertService>(
-    "TrackBoughtStocks",
-    service => service.UpdateCurrentPrice(),
-    "45 16 * * 1-5",
-    TimeZoneInfo.FindSystemTimeZoneById("Asia/Kolkata")
-);
+//recurringJobManager.AddOrUpdate<AlertService>(
+//    "TrackBoughtStocks",
+//    service => service.UpdateCurrentPrice(),
+//    "45 16 * * 1-5",
+//    TimeZoneInfo.FindSystemTimeZoneById("Asia/Kolkata")
+//);
+#endregion
 
 app.MapControllerRoute(
     name: "default",
