@@ -9,12 +9,14 @@ namespace IPOPulse.Services
         private readonly AppDBContext _context;
         private readonly IConfiguration _config;
         private readonly HttpClient _httpClient;
+        private readonly IMessageService _messageService;
 
-        public AlertService(AppDBContext context, IConfiguration config)
+        public AlertService(AppDBContext context, IConfiguration config, IMessageService messageService)
         {
             _context = context;
             _config = config;
             _httpClient = new HttpClient();
+            _messageService = messageService;
             var apiKey = _config["MarketAPI:Key"];
             if (string.IsNullOrEmpty(apiKey))
                 throw new InvalidOperationException("API key missing.");
@@ -109,6 +111,10 @@ namespace IPOPulse.Services
 
                 _context.BStocks.Add(bstock);
                 await _context.SaveChangesAsync();
+
+                string subject = "Opportunity: Stock on a Strong Bull Run – Act Now!";
+                
+                await _messageService.SendMailAsync(subject, stock.Name, stock.Symbol, stock.currentPrice);
             }
             catch (Exception ex) { 
                 Console.WriteLine(ex.ToString());
@@ -124,10 +130,16 @@ namespace IPOPulse.Services
                 if (indicator == 0)
                 {
                     // Fn to sell alert msg done to SL hit
+                    string subject = "Alert: Time to Sell, Support Level Broken";
+                    
+                    await _messageService.SendMailAsync(subject, stock.Name, stock.Symbol, stock.CurrentPrice);
                 }
                 else
                 {
                     // Sell Recommendation Msg for Profit Booking
+                    string subject = "Time To Book Profits ;)";
+                
+                    await _messageService.SendMailAsync(subject, stock.Name, stock.Symbol, stock.CurrentPrice);
                 }
                 stock.ExitPrice = stock.CurrentPrice;
                 await _context.SaveChangesAsync();

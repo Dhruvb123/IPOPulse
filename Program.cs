@@ -17,9 +17,7 @@ builder.Services.AddHangfire(config =>
         QueuePollInterval = TimeSpan.FromSeconds(15),
         UseRecommendedIsolationLevel = true,
         DisableGlobalLocks = true
-    }
-
-    ));
+    }));
 
 builder.Services.AddHangfireServer(options =>
 {
@@ -37,7 +35,7 @@ builder.Services.AddDbContext<AppDBContext>(options =>
 builder.Services.AddSingleton<HangfireJobCleaner>();
 builder.Services.AddScoped<IpoDataService>();
 builder.Services.AddScoped<MarketDataService>();
-builder.Services.AddScoped<MessageService>();
+builder.Services.AddScoped<IMessageService, MailService>();
 builder.Services.AddScoped<AlertService>();
 #endregion
 
