@@ -66,7 +66,8 @@ namespace IPOPulse.Controllers
 
             UserModel user = new UserModel()
             {
-                Name = "",
+                FirstName = model.FirstName,
+                LastName = model.LastName,
                 Email = model.Email,
                 Contact = model.Contact,
                 AgeGroup = model.AgeGroup,

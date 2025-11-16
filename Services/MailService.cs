@@ -34,16 +34,15 @@ namespace IPOPulse.Services
                     if (subject.Contains("Opportunity"))
                     {
                         body = $"""
-                                Dear {customer.Name},
+                                <p>Dear {customer.FirstName},</p>
 
-                                I wanted to alert you that {stockName}({stockSymbol}) has entered a solid bull run. 
+                                <p>I wanted to alert you that {stockName}({stockSymbol}) has entered a solid bull run.</p>
                     
-                                Currently at {price} it is showing strong momentum and short-term upside potential. This is a prime opportunity to consider buying before the rally gains further steam.
+                                <p>Currently at {price} it is showing strong momentum and short-term upside potential. This is a prime opportunity to consider buying before the rally gains further steam.</p>
 
-                                Given current market dynamics, this move could offer quick gains. Don't worry we got you covered with Sell Alerts as well.
+                                <p>Given current market dynamics, this move could offer quick gains. Don't worry we got you covered with Sell Alerts as well.</p>
 
-                                Best regards,
-                                IPOPulse.
+                                <p>Best regards,<br/>IPOPulse.</p>
                                 """;
                     }
                     else
@@ -52,26 +51,24 @@ namespace IPOPulse.Services
                         {
 
                             body = $"""
-                                Dear {customer.Name},
+                                <p>Dear {customer.FirstName},</p>
 
-                                {stockName}({stockSymbol}) has just crossed below a key support level, signaling potential downside risk ahead.
-                                This is a good moment to consider selling to avoid further losses by selling it at {price}.
+                                <p>{stockName}({stockSymbol}) has just crossed below a key support level, signaling potential downside risk ahead.</p>
+                                <p>This is a good moment to consider selling to avoid further losses by selling it at {price}.</p>
 
-                                Best regards,
-                                IPOPulse.
+                                <p>Best regards,<br/>IPOPulse.</p>
                                 """;
                         }
                         else
                         {
                             body = $"""
-                                Dear {customer.Name},
+                                <p>Dear {customer.FirstName},</p>
 
-                                {stockName}({stockSymbol}) has just given strong profits in last few days.
+                                <p>{stockName}({stockSymbol}) has just given strong profits in last few days.</p>
 
-                                This is a good moment to consider selling it at {price}, thus booking decent profits.
+                                <p>This is a good moment to consider selling it at {price}, thus booking decent profits.</p>
 
-                                Best regards,
-                                IPOPulse.
+                                <p>Best regards,<br/>IPOPulse.</p>
                                 """;
                         }
                     }
@@ -98,7 +95,7 @@ namespace IPOPulse.Services
                         await client.SendAsync(message);
                         await client.DisconnectAsync(true);
 
-                        Console.WriteLine("Email sent successfully!");
+                        Console.WriteLine($"Email sent successfully to {customer.Email}!");
                     }
                 }
 

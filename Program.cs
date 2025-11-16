@@ -3,6 +3,7 @@ using Hangfire.SqlServer;
 using IPOPulse.DBContext;
 using IPOPulse.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Metrics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -104,6 +105,28 @@ using (var scope = app.Services.CreateScope())
             TimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Kolkata") 
         }
     );
+
+    recurringJobManager.AddOrUpdate<AlertService>(
+       "SendAlerts",
+       service => service.BuyAlert(new IPOPulse.Models.MarketData()
+       {
+           ISIN = "ISIN",
+           Name = "Rubicon Research",
+           Symbol = "Rubicon",
+           offeredPrice = "485",
+           listingDayHigh = "585",
+           listingDayLow = "625",
+           currentPrice = "655.5",
+           counter = 0,
+           ID = "44",
+           ListingDate = new DateTime(2025-10-16),
+       }),
+       "*/5 * * * *",
+       new RecurringJobOptions
+       {
+           TimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Kolkata")
+       }
+   );
 }
 
 #region Static Scheduler
@@ -131,6 +154,8 @@ using (var scope = app.Services.CreateScope())
 //    TimeZoneInfo.FindSystemTimeZoneById("Asia/Kolkata")
 //);
 #endregion
+
+
 
 app.MapControllerRoute(
     name: "default",

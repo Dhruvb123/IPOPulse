@@ -5,7 +5,10 @@ namespace IPOPulse.Models
     public class RegisterViewModel
     {
         [Required]
-        public string Name { get; set; }
+        public string FirstName { get; set; }
+
+        [Required]
+        public string LastName { get; set; }
 
         [Required]
         public string Contact { get; set; }
