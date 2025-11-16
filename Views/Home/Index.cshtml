@@ -1,16 +1,157 @@
 ﻿@{
     ViewData["Title"] = "Home";
 }
+
 <style>
-    body{
-        background-image: url('/images/HomePageBg.jpg');
+    body {
+        background-image: url('/images/HomepageBg.jpg');
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
-        height: 90vh;
-        color: white;
+    }
+    /* Full screen background */
+    .homepage-bg {
+        
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 40px 15px;
+    }
+
+    /* Glassy content box */
+    .home-content {
+        max-width: 1000px;
+        background: rgba(0, 0, 0, 0.60);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 2.8rem 2.2rem;
+        border-radius: 18px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.75);
+        backdrop-filter: blur(8px);
+        color: #e8e8e8;
+        text-align: center;
+    }
+
+    .home-content h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 1.6rem;
+        letter-spacing: 1px;
+        color: #4cd137;
+        text-shadow: 0 0 12px rgba(76, 209, 55, 0.7);
+    }
+
+    .home-content p {
+        font-size: 1.2rem;
+        line-height: 1.7;
+        margin-bottom: 1.4rem;
+    }
+
+    .highlight {
+        color: #4cd137;
+        font-weight: 700;
+        font-size: 1.45rem;
+        margin: 2.2rem 0 1.2rem;
+        text-shadow: 0 0 10px rgba(76, 209, 55, 0.6);
+    }
+
+    /* Benefits list */
+    ul.benefits-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 auto 2rem;
+        max-width: 500px;
+        text-align: left;
+    }
+
+    ul.benefits-list li {
+        margin-bottom: 1rem;
+        padding-left: 1.6rem;
+        position: relative;
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: #dcdcdc;
+    }
+
+    ul.benefits-list li::before {
+        position: absolute;
+        left: 0;
+        top: 1px;
+        color: #4cd137;
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-shadow: 0 0 8px rgba(76, 209, 55, 0.6);
+    }
+
+    .benefits-list li {
+        display: flex;
+        align-items: start;
+        gap: 10px;
+        margin-bottom: 1rem;
+        font-weight: 600;
+        font-size: 1.15rem;
+        color: #eaeaea;
+    }
+
+    .benefits-list svg {
+        width: 22px;
+        height: 22px;
+        fill: #4cd137;
+        flex-shrink: 0;
+        filter: drop-shadow(0px 0px 6px rgba(76, 209, 55, 0.6));
+    }
+
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .home-content {
+            padding: 2rem 1.4rem;
+        }
+        .home-content h1 {
+            font-size: 2.4rem;
+        }
+        .home-content p {
+            font-size: 1.05rem;
+        }
     }
 </style>
 
-<h1>@ViewData["Message"]</h1>
-<p></p>
+<div class="homepage-bg">
+    <div class="home-content">
+        <h1>Welcome to IPOPulse</h1>
+
+        <p>Navigate the dynamic world of IPO trading with confidence—right from the crucial moments after an IPO listing.</p>
+
+        <p>IPOPulse is designed to empower traders by providing timely, actionable insights on what to do post-listing. Whether it’s identifying the best time to buy during a bull run or signaling when to sell after support levels are crossed, we help you capitalize on IPO market movements effectively.</p>
+
+        <div class="highlight">What We Offer</div>
+
+        <ul class="benefits-list">
+            <li>
+                <svg viewBox="0 0 24 24">
+                    <path d="M20.285 6.707l-11.4 11.4-5.657-5.657 1.414-1.414 4.243 4.243 9.986-9.986z" />
+                </svg>
+                Expert guidance tailored for post-IPO trading
+            </li>
+            <li>
+                <svg viewBox="0 0 24 24">
+                    <path d="M20.285 6.707l-11.4 11.4-5.657-5.657 1.414-1.414 4.243 4.243 9.986-9.986z" />
+                </svg>
+                Real-time alerts on key price movements and trends
+            </li>
+            <li>
+                <svg viewBox="0 0 24 24">
+                    <path d="M20.285 6.707l-11.4 11.4-5.657-5.657 1.414-1.414 4.243 4.243 9.986-9.986z" />
+                </svg>
+                Clear buy and sell signals to maximize your returns
+            </li>
+            <li>
+                <svg viewBox="0 0 24 24">
+                    <path d="M20.285 6.707l-11.4 11.4-5.657-5.657 1.414-1.414 4.243 4.243 9.986-9.986z" />
+                </svg>
+                Updates that help you stay ahead in volatile markets
+            </li>
+        </ul>
+
+        <p>Make informed trading decisions post-IPO with IPOPulse, your partner in navigating IPO market action.</p>
+    </div>
+</div>

@@ -71,7 +71,7 @@ namespace IPOPulse.Services
                             _context.Market.Remove(stock);
                         }
                                                
-                        if(priceDecimal < listingDayLowDecimal * 0.9m)
+                        if(priceDecimal < listingDayLowDecimal * 0.85m)
                         {
                             _context.Market.Remove(stock);
                         }                                 

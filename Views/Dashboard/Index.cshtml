@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<IPOPulse.Models.BStockData>
 
 <style>
-    body{
+    body {
         background-image: url('/images/DashboardBg.png');
         background-size: cover;
         background-position: center;
@@ -9,26 +9,27 @@
         height: 90vh;
     }
     /* Container centers the table */
-    .main-container{
+    .main-container {
         height: 100%;
         width: 100%;
         display: flex;
         justify-content: center;
-        align-items: flex-start;
+        align-items: center;
+
     }
+
     .table-container {
         height: 80vh;
         width: 100vw;
         margin: 2rem auto;
         background: rgba(255, 255, 255, 0.1); /* translucent */
-        backdrop-filter: blur(3px); /* glass blur effect */
+        backdrop-filter: blur(10px); /* glass blur effect */
         border-radius: 15px;
         box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
         overflow-y: auto;
         box-sizing: border-box;
     }
 
-    /* Table styles */
     table.glass-table {
         table-layout: fixed;
         width: 100%;
@@ -39,17 +40,17 @@
     }
 
     thead.glass-thead {
-        background-color: rgba(0, 0, 0, 0.75); 
+        background-color: rgba(0, 0, 0, 0.75);
         position: sticky;
         top: 0;
         z-index: 5;
     }
 
-    thead.glass-thead th {
-        padding: 15px 20px;
-        font-weight: bold;
-        font-size: 1.15rem;
-    }
+        thead.glass-thead th {
+            padding: 15px 20px;
+            font-weight: bold;
+            font-size: 1.15rem;
+        }
 
     tbody tr:hover {
         background: rgba(255, 255, 255, 0.15);
@@ -75,43 +76,47 @@
     }
 </style>
 
-@if (Model != null && Model.Any()){
+@if (Model != null && Model.Any())
+{
     <div class="main-container">
-        <div class="table-container">
-            <table class="glass-table">
-                <thead class="glass-thead">
-                    <tr>
-                        <th colspan="2">Name</th>
-                        <th>Symbol</th>
-                        <th>Buying Price</th>
-                        <th>Buy Date</th>
-                        <th>Current Price</th>
-                        <th>Returns</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var stock in Model)
-                    {
-                        string returnsClass = "returns-positive";
-                        if (stock.Returns.Contains("-")) returnsClass = "returns-negative";
+    <div class="table-container">
+        <table class="glass-table">
+            <thead class="glass-thead">
+                <tr>
+                    <th colspan="2">Name</th>
+                    <th>Symbol</th>
+                    <th>Buying Price</th>
+                    <th>Buy Date</th>
+                    <th>Current Price</th>
+                    <th>Exit</th>
+                    <th>Returns</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var stock in Model)
+                {
+                    string returnsClass = "returns-positive";
+                    if (stock.Returns.Contains("-")) returnsClass = "returns-negative";
 
-                        <tr>
-                            <td colspan="2">@stock.Name</td>
-                            <td>@stock.Symbol</td>
-                            <td>@stock.BuyingPrice</td>
-                            <td>@stock.Date.ToString("yyyy-MM-dd")</td>
-                            <td>@stock.CurrentPrice</td>
-                            <td class="@returnsClass">@stock.Returns</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                    <tr>
+                        <td colspan="2">@stock.Name</td>
+                        <td>@stock.Symbol</td>
+                        <td>@stock.BuyingPrice</td>
+                        <td>@stock.Date.ToString("yyyy-MM-dd")</td>
+                        <td>@stock.CurrentPrice</td>
+                        <td>@stock.ExitPrice</td>
+                        <td class="@returnsClass">@stock.Returns</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
+</div>
 }
 else
 {
 <div style="text-align:center; color:white; font-size:1.5rem; margin-top:3rem;">
-    No Bought Stocks Found.
+    No History Found.
 </div>
 }
+

@@ -4,28 +4,104 @@
     ViewData["Title"] = "Login";
 }
 
-<h2>Login</h2>
+<style>
+    body {
+        background-image: url('/images/HomepageBg.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed; /* keeps BG full even while scrolling */
+        overflow-x: hidden;
+    }    
 
-<form asp-action="Login" method="post">
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    .login-card {
+        width: 100%;
+        max-width: 600px;
+        padding: 2rem;
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+        background: rgba(0, 0, 0, 0.65);
+        box-shadow: 0 0 15px rgba(76, 209, 55, 0.3);
+        border: 1px solid rgba(76, 209, 55, 0.3);
+    }
 
-    <div class="mb-3">
-        <label asp-for="Email" class="form-label"></label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
+    .login-card h2 {
+        text-align: center;
+        color: #4cd137;
+        margin-bottom: 1.5rem;
+        text-shadow: 0 0 8px rgba(76, 209, 55, 0.8);
+    }
 
-    <div class="mb-3">
-        <label asp-for="Password" class="form-label"></label>
-        <input asp-for="Password" type="password" class="form-control" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
+    /* Labels */
+    label {
+        color: #4cd137;
+        font-weight: 500;
+    }
 
-    <button type="submit" class="btn btn-primary">Login</button>
-</form>
+    /* Inputs */
+    .form-control {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(76, 209, 55, 0.4);
+        color: #fff;
+    }
+
+    .form-control:focus {
+        border-color: #4cd137;
+        box-shadow: 0 0 8px rgba(76, 209, 55, 0.7);
+        background-color: rgba(0, 0, 0, 0.6);
+        color: #fff;
+    }
+
+    /* Button */
+    .btn-login {
+        width: 100%;
+        background-color: transparent;
+        border: 2px solid #4cd137;
+        color: #4cd137;
+        font-weight: 600;
+        border-radius: 10px;
+        transition: 0.3s ease-in-out;
+        padding: 0.7rem 0;
+        margin: 1rem 0;
+    }
+
+    .btn-login:hover {
+        background-color: #4cd137;
+        color: #000;
+        box-shadow: 0 0 15px rgba(76, 209, 55, 0.9);
+        transform: translateY(-2px);
+    }
+
+    .text-danger {
+        color: #ff4f4f !important;
+        font-size: 0.9rem;
+    }
+
+</style>
+
+<div class="login-card">
+    <h2>Login</h2>
+
+    <form asp-action="Login" method="post">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label"></label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Password" class="form-label"></label>
+            <input asp-for="Password" type="password" class="form-control" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn-login">Login</button>
+    </form>
+</div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 }
+

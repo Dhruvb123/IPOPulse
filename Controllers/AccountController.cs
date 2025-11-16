@@ -79,5 +79,12 @@ namespace IPOPulse.Controllers
 
             return RedirectToAction("Login");
         }
+
+        [HttpPost]
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index", "Home");
+        }
     }
 }
