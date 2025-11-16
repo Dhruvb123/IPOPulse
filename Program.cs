@@ -1,9 +1,9 @@
 using Hangfire;
 using Hangfire.SqlServer;
+using IPOPulse.Authorize;
 using IPOPulse.DBContext;
 using IPOPulse.Services;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics.Metrics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 #region Hangfire Services
 builder.Services.AddHangfire(config =>
-    config.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection"), new SqlServerStorageOptions
+    config.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultHangfireConnection"), new SqlServerStorageOptions
     {
         CommandBatchMaxTimeout = TimeSpan.FromMinutes(10),
         SlidingInvisibilityTimeout = TimeSpan.FromMinutes(10),
@@ -20,10 +20,8 @@ builder.Services.AddHangfire(config =>
         DisableGlobalLocks = true
     }));
 
-builder.Services.AddHangfireServer(options =>
-{
-    options.WorkerCount = 5;
-});
+builder.Services.AddHangfireServer();
+
 #endregion
 
 // EF CORE 
@@ -55,16 +53,23 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHangfireDashboard();
-
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
+
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.UseSession();
+
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    Authorization = new[] { new HangfireAuthorizationFilter() }
+});
+//app.UseHangfireDashboard("/hangfire", new DashboardOptions
+//{
+//    Authorization = new[] { new AllowAllDashboardAuthorizationFilter() }
+//});
+
 
 // Cleaning the scheduled jobs to prevent limits of API
 using (var scope = app.Services.CreateScope())
@@ -76,7 +81,7 @@ using (var scope = app.Services.CreateScope())
 using (var scope = app.Services.CreateScope())
 {
     var recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
-
+    
     recurringJobManager.AddOrUpdate<IpoDataService>(
         "FetchIPOData",
         service => service.FetchAndSaveIpoData(),

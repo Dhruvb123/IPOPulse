@@ -7,6 +7,7 @@
         background-position: center;
         background-repeat: no-repeat;
         height: 90vh;
+        background-attachment: fixed;
     }
     /* Container centers the table */
     .main-container {
@@ -46,11 +47,11 @@
         z-index: 5;
     }
 
-        thead.glass-thead th {
-            padding: 15px 20px;
-            font-weight: bold;
-            font-size: 1.15rem;
-        }
+    thead.glass-thead th {
+        padding: 15px 20px;
+        font-weight: bold;
+        font-size: 1.15rem;
+    }
 
     tbody tr:hover {
         background: rgba(255, 255, 255, 0.15);
@@ -61,7 +62,7 @@
         border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         color: black;
         font-weight: bold;
-        font-size: 1.15rem;
+        font-size: 1rem;
     }
 
     /* Color returns column based on positive/negative values */
@@ -88,7 +89,6 @@
                     <th>Buying Price</th>
                     <th>Buy Date</th>
                     <th>Current Price</th>
-                    <th>Exit</th>
                     <th>Returns</th>
                 </tr>
             </thead>
@@ -104,7 +104,6 @@
                         <td>@stock.BuyingPrice</td>
                         <td>@stock.Date.ToString("yyyy-MM-dd")</td>
                         <td>@stock.CurrentPrice</td>
-                        <td>@stock.ExitPrice</td>
                         <td class="@returnsClass">@stock.Returns</td>
                     </tr>
                 }
@@ -116,7 +115,7 @@
 else
 {
 <div style="text-align:center; color:white; font-size:1.5rem; margin-top:3rem;">
-    No History Found.
+    No Stock Under Radar Currently.
 </div>
 }
 
