@@ -1,9 +1,11 @@
-﻿using IPOPulse.DBContext;
+﻿using IPOPulse.Authorize;
+using IPOPulse.DBContext;
 using IPOPulse.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IPOPulse.Controllers
 {
+    [SessionAuthorize]
     public class DashboardController : Controller
     {
         private readonly AppDBContext _context;
