@@ -12,8 +12,9 @@ namespace IPOPulse.Services
         private readonly IConfiguration _config;
         private readonly HttpClient _httpClient;
         private readonly AlertService _alert;
+        private readonly IMessageService _messageService;
 
-        public MarketDataService(IConfiguration config, AppDBContext context, AlertService alert)
+        public MarketDataService(IConfiguration config, AppDBContext context, AlertService alert, IMessageService messageService)
         {
             _config = config;
             _context = context;
@@ -25,6 +26,7 @@ namespace IPOPulse.Services
 
             _httpClient.DefaultRequestHeaders.Add("x-api-key", apiKey);
             _alert = alert;
+            _messageService = messageService;
         }
 
         public async Task GetMarketData()
@@ -81,6 +83,8 @@ namespace IPOPulse.Services
             }
             catch (Exception ex) { 
                 Console.WriteLine("Exception occurred while fethcin Market Data.\n" + "Error Message: " + ex.Message + "\nInner Message: " + ex.InnerException + "\n");
+                await _messageService.SendMailAsync("Exception Occured", "", "", "", "Excpetion: " + ex.ToString() + "\n" + "Inner Ex: " + ex.InnerException);
+
                 return;
             }
         }

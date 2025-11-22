@@ -2,6 +2,6 @@
 {
     public interface IMessageService
     {
-       Task SendMailAsync(string subject, string stockName, string stockSymbol, string price);
+       Task SendMailAsync(string subject, string stockName, string stockSymbol, string price, string ex = null);
     }
 }

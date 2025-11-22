@@ -3,18 +3,21 @@ using System.Globalization;
 using System.Text.Json.Nodes;
 using IPOPulse.DBContext;
 using IPOPulse.Models;
+using IPOPulse.Services;
 using Microsoft.EntityFrameworkCore;
 public class IpoDataService
 {
     private readonly IConfiguration _configuration;
     private readonly HttpClient _httpClient;
     private readonly AppDBContext _context;
+    private readonly IMessageService _messageService;
 
-    public IpoDataService(IConfiguration configuration, AppDBContext context)
+    public IpoDataService(IConfiguration configuration, AppDBContext context, IMessageService messageService)
     {
         _configuration = configuration;
         _httpClient = new HttpClient();
         _context = context;
+        _messageService = messageService;
 
         var apiKey = _configuration["IpoAPI:Key"];
         if (string.IsNullOrEmpty(apiKey))
@@ -30,7 +33,7 @@ public class IpoDataService
             List<string> queryParams = new List<string>
             {
                 "status=open",
-                "page=5",
+                "page=1",
                 "limit=1"
             };
 
@@ -122,6 +125,8 @@ public class IpoDataService
             // Log the exception for debugging
             Console.WriteLine("Error fetching IPO data: " + ex.Message);
             // Exit the method without continuing further
+            await _messageService.SendMailAsync("Exception Occured", "", "", "", "Excpetion: " + ex.ToString() + "\n" + "Inner Ex: " + ex.InnerException);
+
             return;
         }
     }
@@ -139,6 +144,10 @@ public class IpoDataService
                 {
                     var baseUrl = _configuration["MarketAPI:BaseURL"];
                     var endpoint = $"/stock?name={ipo.Symbol}";
+
+                    _httpClient.DefaultRequestHeaders.Remove("x-api-key");
+                    _httpClient.DefaultRequestHeaders.Add("x-api-key", _configuration["MarketAPI:Key"]);
+
                     var response = await _httpClient.GetAsync(baseUrl + endpoint);
                     if (!response.IsSuccessStatusCode)
                     {
@@ -188,6 +197,8 @@ public class IpoDataService
         catch(Exception ex)
         {
             Console.WriteLine("Error fetching IPO data: " + ex.Message);
+            await _messageService.SendMailAsync("Exception Occured", "", "", "", "Excpetion: " + ex.ToString() + "\n" + "Inner Ex: " + ex.InnerException);
+
             return;
         }
     }

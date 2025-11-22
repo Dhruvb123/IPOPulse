@@ -69,6 +69,8 @@ namespace IPOPulse.Services
             }
             catch (Exception ex) {
                 Console.WriteLine("Exception occurred while fethcin Market Data.\n" + "Error Message: " + ex.Message + "\nInner Message: " + ex.InnerException + "\n");
+                await _messageService.SendMailAsync("Exception Occured", "", "", "", "Excpetion: "+ex.ToString()+"\n"+"Inner Ex: "+ex.InnerException);
+                throw;
             }
         }
 
@@ -86,7 +88,7 @@ namespace IPOPulse.Services
                     await SellAlert(item, 0);
                 }
                 var bPrice = decimal.Parse(item.BuyingPrice);
-                if (curr > bPrice + (0.25m * bPrice)) { 
+                if (curr > bPrice + (0.18m * bPrice)) { 
                     await SellAlert(item, 1);
                 }
 
@@ -118,6 +120,7 @@ namespace IPOPulse.Services
             }
             catch (Exception ex) { 
                 Console.WriteLine(ex.ToString());
+                await _messageService.SendMailAsync("Exception Occured", "", "", "", "Excpetion: " + ex.ToString() + "\n" + "Inner Ex: " + ex.InnerException);
                 throw;
             }
         }
@@ -147,8 +150,15 @@ namespace IPOPulse.Services
             catch(Exception ex) 
             {
                 Console.WriteLine($"Error: {ex.ToString()}");
+                await _messageService.SendMailAsync("Exception Occured", "", "", "", "Excpetion: " + ex.ToString() + "\n" + "Inner Ex: " + ex.InnerException);
                 throw;
             }
+        }
+
+
+        public async Task DevAlert(String exception)
+        {
+            await _messageService.SendMailAsync(exception, "", "", "");
         }
     }
 }

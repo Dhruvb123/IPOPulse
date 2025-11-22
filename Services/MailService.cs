@@ -14,7 +14,7 @@ namespace IPOPulse.Services
             _configuration = configuration;
             _context = context;
         }
-        public async Task SendMailAsync(string subject, string stockName, string stockSymbol, string price)
+        public async Task SendMailAsync(string subject, string stockName, string stockSymbol, string price, string ex = null)
         {
             try
             {
@@ -31,7 +31,16 @@ namespace IPOPulse.Services
                     message.To.Add(MailboxAddress.Parse(customer.Email));
                     message.Subject = subject;
                     string body = "";
-                    if (subject.Contains("Opportunity"))
+                    if(stockName == "")
+                    {
+                        body = $"""
+                                <p>Dear Dev Exception occured,</p>
+
+                                <p>{ex}</p>
+                                                    
+                                """;
+                    }
+                    else if (subject.Contains("Opportunity"))
                     {
                         body = $"""
                                 <p>Dear {customer.FirstName},</p>
@@ -100,8 +109,8 @@ namespace IPOPulse.Services
                 }
 
             }
-            catch (Exception ex) {
-                Console.WriteLine("Could not send email.\nException: "+ex.ToString());
+            catch (Exception exc) {
+                Console.WriteLine("Could not send email.\nException: "+exc.ToString());
                 throw;
             }
 

@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 #region Hangfire Services
 builder.Services.AddHangfire(config =>
-    config.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultHangfireConnection"), new SqlServerStorageOptions
+    config.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnectionUAT"), new SqlServerStorageOptions
     {
         CommandBatchMaxTimeout = TimeSpan.FromMinutes(10),
         SlidingInvisibilityTimeout = TimeSpan.FromMinutes(10),
@@ -26,7 +26,7 @@ builder.Services.AddHangfireServer();
 
 // EF CORE 
 builder.Services.AddDbContext<AppDBContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionUAT"),
     sqlOptions => sqlOptions.CommandTimeout(180))
     );
 
@@ -85,7 +85,7 @@ using (var scope = app.Services.CreateScope())
     recurringJobManager.AddOrUpdate<IpoDataService>(
         "FetchIPOData",
         service => service.FetchAndSaveIpoData(),
-        "00 16 * * 1-5",
+        "10 20 * * 1-5",
         new RecurringJobOptions
         {
             TimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Kolkata")
@@ -95,7 +95,7 @@ using (var scope = app.Services.CreateScope())
     recurringJobManager.AddOrUpdate<MarketDataService>(
         "FetchMarketData",
         service => service.GetMarketData(),
-        "30 16 * * 1-5",
+        "15 20 * * 1-5",
         new RecurringJobOptions
         {
             TimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Kolkata")
@@ -105,7 +105,7 @@ using (var scope = app.Services.CreateScope())
     recurringJobManager.AddOrUpdate<AlertService>(
         "TrackBoughtStocks",
         service => service.UpdateCurrentPrice(),
-        "00 17 * * 1-5",
+        "20 20 * * 1-5",
         new RecurringJobOptions { 
             TimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Kolkata") 
         }

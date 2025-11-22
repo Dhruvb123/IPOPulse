@@ -28,5 +28,18 @@ namespace IPOPulse.Controllers
                                             .ToList();
             return View(data);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> SqOff(String Id)
+        {
+            BStockData stock = _context.BStocks.FirstOrDefault(st => st.Id==Id);
+            if (stock == null)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+            stock.ExitPrice = stock.CurrentPrice;
+            await _context.SaveChangesAsync();
+            return RedirectToAction("History");
+        }
     }
 }

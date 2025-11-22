@@ -1,0 +1,33 @@
+select * from ipo
+select * from market 
+select * from bstocks
+select * from users
+update Users set LastName='Bheda'
+
+delete from users where id='3'
+
+EXEC sp_rename 'Users.Name', 'FirstName', 'COLUMN';
+
+
+update BStocks set Name='Lenskart Technologies' where Id='10'
+
+ALTER TABLE Market ADD ListingDate Date NOT NULL Default '';
+
+delete from market where id='10'
+
+Alter table users add LastName Varchar(255) Not Null Default ''
+
+ALTER TABLE BStocks 
+DROP CONSTRAINT DF__BStocks__LastNam__05D8E0BE;
+ALTER TABLE BStocks DROP COLUMN LastName;
+
+insert into BStocks(Id,Name,Symbol,BuyingPrice,Date,CurrentPrice,Returns,SL,ExitPrice) values (22,'Vikran Engineering','VIKRAN','337.75','2025-11-13 21:10:14.807','108.97','3.38%','94',null)
+
+delete from market where ID in (select distinct(id) from BStocks)
+
+Insert into ipo (Name, Symbol, ListingDate, Price, ID)
+values
+('Physicswallah Limited','PHYSICS','2025-11-18','109','1478080936')
+
+insert into market 
+values ('INE029601015','Physics Wallah Ltd','109',162,137,'155.2',0,30,'PHYSICSWALLAH','2025-11-18')
